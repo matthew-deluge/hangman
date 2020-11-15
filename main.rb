@@ -1,7 +1,8 @@
-require_relative 'game.rb'
+require_relative 'lib/game.rb'
+require_relative 'lib/menu.rb'
 
 
 puts "Please enter your name:"
 name = gets.chomp
-game = Game.new(name)
-game.play
+menu = Menu.new(name)
+menu.play
