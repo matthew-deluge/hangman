@@ -1,9 +1,8 @@
+# provides a menu for the game, allowing the player to load a file
 class Menu
-  require_relative 'game.rb'
 
-  def initialize(player_name)
-    @menu_options = ["1: Start New Game", "2: Load Saved Game", "3: Exit Game"]
-    @player_name = player_name
+  def initialize
+    @menu_options = ['1: Start New Game', '2: Load Saved Game', '3: Exit Game']
   end
 
   def display_menu
@@ -14,10 +13,8 @@ class Menu
   def player_input
     display_menu
     input = gets.chomp
-    until ['1','2','3'].include?(input)
-      display_menu
-    end
-    return input
+    display_menu until ['1','2','3'].include?(input)
+    input
   end
 
   def play
@@ -25,10 +22,10 @@ class Menu
       choice = player_input
       case choice
       when '1'
-        game = Game.new(@player_name)
+        game = Game.new
         game.play
       when '2'
-        game = Game.new(@player_name)
+        game = Game.new
         game.load_file
         game.play
       when '3'

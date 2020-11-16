@@ -3,13 +3,13 @@ class Game
   require 'json'
   attr_reader :solution, :word, :current_display
 
-  def initialize(player_name)
-    @player_name = player_name
+  def initialize
     @guesses = 0
     @word = new_word.chomp.downcase
     @solution = @word.split('')
     @current_display = Array.new(@solution.length, '_')
     @past_guesses = []
+    @current_gallows = Display.new
   end
 
   def new_word
@@ -18,26 +18,51 @@ class Game
   end
 
   def display_progress(display)
-    puts "So far your have #{display.join(' ')}"
+    if @guesses <=6 && !check_win
+      @current_gallows.display_gallows
+      puts "So far your have #{display.join(' ')}"
+      print 'You have guessed: '
+      @past_guesses.each { |guess| print "#{guess} "}
+      puts ''
+    end
   end
 
-  def letter?(lookAhead)
-    lookAhead =~ /[[:alpha:]]/
+  def display_loss
+    puts 'You lost! So sad...'
+    @current_gallows.display_gallows
+    puts "You had #{@current_display.join(' ')}"
+    print 'You guessed: '
+    @past_guesses.each { |guess| print "#{guess} "}
+    puts "and your word was #{@word}"
+    puts ''
+  end
+
+  def display_win
+    puts 'You won! Congrats!'
+    @current_gallows.display_gallows
+    print 'You guessed: '
+    @past_guesses.each { |guess| print "#{guess} " }
+    puts "And got the word #{@word}"
+    puts ''
+  end
+
+  def letter?(look_ahead)
+    look_ahead =~ /[[:alpha:]]/
   end
 
   def player_guess
-    guess = ""
-    until letter?(guess)&&guess.length==1&&!@past_guesses.include?(guess)
-      puts "Please guess a letter, #{@player_name}"
-      guess = gets.chomp
-      puts 'Please guess a new letter' if @past_guesses.include?(guess)
+    guess = ''
+    until letter?(guess) && guess.length == 1 && !@past_guesses.include?(guess)
+      puts 'Please guess a letter'
+      guess = gets.downcase.chomp
+      puts 'You must guess a new letter' if @past_guesses.include?(guess)
       if guess.downcase == 'save'
         puts 'Saving file'
         save_file
       end
     end
     @past_guesses.push(guess)
-    return guess
+    guess
   end
 
   def update_display(guess)
@@ -51,12 +76,14 @@ class Game
   def check_input(guess)
     if solution.include?(guess)
       update_display(guess)
-      puts "You got it, #{@player_name}! #{guess} was in the word!"
+      puts "You got it! #{guess} was in the word!\n\n"
     else
       @guesses += 1
-      puts "Nope! You have #{8-@guesses} guesses left"
-
+      @current_gallows.build_gallows(@guesses)
+      response = @guesses == 6 ? "Nope, last guess!\n\n" : "Nope! You have #{7-@guesses} guesses left\n\n"
+      puts response
     end
+    sleep 0.4
   end
 
   def check_win
@@ -65,7 +92,6 @@ class Game
 
   def save_file
     game_state = {
-      name: @player_name,
       guesses: @guesses,
       word: @word,
       solution: @solution,
@@ -80,21 +106,20 @@ class Game
   def load_file
     file = File.read('lib/save_data.json')
     game_state = JSON.parse(file)
-    @player_name = game_state['player_name']
     @guesses = game_state['guesses']
     @word = game_state['word']
     @solution = game_state['solution']
     @current_display = game_state['current_display']
     @past_guesses = game_state['past_guesses']
+    display_progress(@current_display)
   end
 
   def play
-    puts "Welcome to Hangman! Your word has been selected, #{@player_name}, and it is #{@word.length} letters long!"
-    until check_win || @guesses >= 8
+    puts "Let's play! Your word is #{@word.length} letters long!"
+    until check_win || @guesses >= 7
       check_input(player_guess)
       display_progress(@current_display)
     end
-    response = check_win ? "You won, #{@player_name}, nice work!" : "You lost, #{@player_name}, so sad!"
-    puts response
+    check_win ? display_win : display_loss
   end
 end
