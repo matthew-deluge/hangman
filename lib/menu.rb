@@ -5,7 +5,12 @@ class Menu
     @menu_options = ['1: Start New Game', '2: Load Saved Game', '3: Exit Game']
   end
 
+  def clear_screen
+    print "\e[2J\e[f"
+  end
+
   def display_menu
+    clear_screen
     puts 'Please enter the number that matches your choice:'
     @menu_options.each { |item| puts item }
   end

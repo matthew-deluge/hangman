@@ -34,7 +34,6 @@ class Display
   def display_gallows
     @currrent_gallows.each do |line|
       puts line
-      sleep 0.1
     end
     puts ''
   end

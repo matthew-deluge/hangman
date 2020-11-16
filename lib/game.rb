@@ -12,6 +12,10 @@ class Game
     @current_gallows = Display.new
   end
 
+  def clear_screen
+    print "\e[2J\e[f"
+  end
+
   def new_word
     filename = 'lib/5desk.txt'
     File.open(filename, 'r').readlines.sample
@@ -28,22 +32,26 @@ class Game
   end
 
   def display_loss
+    clear_screen
     puts 'You lost! So sad...'
     @current_gallows.display_gallows
     puts "You had #{@current_display.join(' ')}"
     print 'You guessed: '
     @past_guesses.each { |guess| print "#{guess} "}
     puts "and your word was #{@word}"
-    puts ''
+    puts 'Press any key to return to the menu'
+    gets
   end
 
   def display_win
+    clear_screen
     puts 'You won! Congrats!'
     @current_gallows.display_gallows
     print 'You guessed: '
     @past_guesses.each { |guess| print "#{guess} " }
-    puts "And got the word #{@word}"
-    puts ''
+    puts "And got the word #{@word}\n"
+    puts 'Press any key to return to the menu'
+    gets
   end
 
   def letter?(look_ahead)
@@ -74,6 +82,7 @@ class Game
   end
 
   def check_input(guess)
+    clear_screen
     if solution.include?(guess)
       update_display(guess)
       puts "You got it! #{guess} was in the word!\n\n"
@@ -83,7 +92,6 @@ class Game
       response = @guesses == 6 ? "Nope, last guess!\n\n" : "Nope! You have #{7-@guesses} guesses left\n\n"
       puts response
     end
-    sleep 0.4
   end
 
   def check_win
