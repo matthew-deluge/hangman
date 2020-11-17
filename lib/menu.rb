@@ -1,7 +1,10 @@
 # provides a menu for the game, allowing the player to load a file
+require_relative 'instructables.rb'
 class Menu
-
+  include Instructables
   def initialize
+    clear_screen
+    print_instructions
     @menu_options = ['1: Start New Game', '2: Load Saved Game', '3: Exit Game']
   end
 
@@ -10,7 +13,6 @@ class Menu
   end
 
   def display_menu
-    clear_screen
     puts 'Please enter the number that matches your choice:'
     @menu_options.each { |item| puts item }
   end

@@ -38,8 +38,7 @@ class Game
     puts "You had #{@current_display.join(' ')}"
     print 'You guessed: '
     @past_guesses.each { |guess| print "#{guess} "}
-    puts "and your word was #{@word}"
-    puts 'Press any key to return to the menu'
+    puts "and your word was #{@word}\nPress any key to return to the menu"
     gets
   end
 
@@ -49,8 +48,7 @@ class Game
     @current_gallows.display_gallows
     print 'You guessed: '
     @past_guesses.each { |guess| print "#{guess} " }
-    puts "And got the word #{@word}\n"
-    puts 'Press any key to return to the menu'
+    puts "and got the word #{@word}.\n Press any key to return to the menu"
     gets
   end
 
